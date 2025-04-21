@@ -6,7 +6,7 @@ Base = declarative_base()
 
 class User(Base, UserMixin):
     __tablename__ = "users"
-    id = Column(__name_pos=Integer, primary_key=True)
-    username = Column(__name_pos=String(length=80), unique=True)
-    email = Column(__name_pos=String(length=120), unique=True)
-    password_hash = Column(__name_pos=String(length=256))
+    id = Column(Integer, primary_key=True)
+    username = Column(String(length=80), unique=True)
+    email = Column(String(length=120), unique=True)
+    password_hash = Column(String(length=256))
