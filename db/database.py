@@ -6,10 +6,12 @@ from config import settings
 
 
 engine = create_engine(url=settings.DATABASE_URL)
-SessionLocal = scoped_session(session_factory=sessionmaker(autocommit=False))
+SessionLocal = scoped_session(session_factory=sessionmaker(autocommit=False, bind=engine),)
+
 
 def init_db():
     Base.metadata.create_all(bind=engine)
+
 
 @contextmanager
 def session_scope():
