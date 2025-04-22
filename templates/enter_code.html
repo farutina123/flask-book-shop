@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block content %}
+    <h2 class="text-center mb-4">Подтверждение по смс</h2>
+    <div class="text-center">{{code}}</div>
+    <form action="/enter_code/{{code}}/{{user_email}}" method="POST">
+        {{ form.hidden_tag() }}
+        <div class="mb-3">{{ form.code.label(class="form-label") }}{{ form.code(class="form-control") }}</div>
+
+        <button type="submit" class="btn btn-primary w-100">Подтвердить</button>
+    </form>
+{% endblock %}
