@@ -1,0 +1,28 @@
+{% extends "base_home.html" %}
+{% block title %}shop{% endblock %}
+{% block content %}
+    <div class="card w-25 text-center" role="button" onclick="location.href='/login';">Вход</div>
+    <div class="card w-25 text-center" role="button" onclick="location.href='/register';">Регистрация</div>
+{% endblock %}
+{% block top %}
+<div>
+    <h2 class="m-4">ТОП-3 книги недели</h2>
+    <div class="d-flex justify-content-around mb-4">
+        {% for item in top %}
+                <div class="card" onclick="location.href='#';" role="button">
+                      <img src="..." class="card-img-top bg-light" style="height: 200px;" alt="...">
+                      <div class="card-body">
+                        <h5 class="card-title m-0">{{item.title}}</h5>
+                        <div class="d-flex m-0">
+                            <p class="card-text m-0">{{item.author}}</p>
+                            <p class="card-text m-0">{{item.year}}</p>
+                        </div>
+                        <p class="card-text font-weight-bold m-0">{{item.price}} P</p>
+                        <p class="card-text m-0">Рейтинг: {{item.rating}} </p>
+                        <a href="#" class="btn btn-primary">Купить</a>
+                      </div>
+                </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

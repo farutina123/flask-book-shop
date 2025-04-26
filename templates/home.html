@@ -1,6 +1,9 @@
-{% extends "base.html" %}
+{% extends "base_home.html" %}
 {% block title %}Home{% endblock %}
 {% block content %}
-    <h2 class="text-center">Welcome, {{ name }}!</h2>
-    <a href="{{ url_for('main.logout') }}" class="btn btn-danger">Logout</a>
+    <div class="card w-25 text-center" role="button" onclick="location.href='#">Заказы</div>
+    <div class="card w-25 text-center" role="button" onclick="location.href='#">Корзина</div>
+    <div class="card w-25 text-center" role="button" onclick="location.href='{{ url_for('main.logout') }}';">Выход</div>
 {% endblock %}
+{% block top %}Топ 3 книг: {% endblock %}
+
