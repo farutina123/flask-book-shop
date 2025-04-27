@@ -11,6 +11,7 @@ import email_validator
 from click import confirm
 import json
 from sqlalchemy import cast, String
+from sqlalchemy.sql.expression import func
 
 main_blueprint = Blueprint('main', __name__, url_prefix='/')
 
@@ -87,6 +88,11 @@ def register():
     return render_template('register.html', form=form)
 
 
+def get_random_books(session, count=3):
+    random_books = session.query(Book).order_by(func.random()).limit(count).all()
+    return random_books
+
+
 @main_blueprint.route('/')
 def not_log():
     with open('books_catalog.json', encoding='utf-8') as f:
@@ -106,14 +112,7 @@ def not_log():
                 session.add(genre)
     with session_scope() as session:
         genre_list = session.query(Genre)
-        books = session.query(Book)
-        list_id = []
-        rand_books = []
-        for item in books:
-            list_id.append(item.id)
-        rand_books_id = random.sample(list_id, 3)
-        for item in rand_books_id:
-            rand_books.append(session.query(Book).filter(cast(Book.id, String) == item).first())
+        rand_books = get_random_books(session, count=3)
         return render_template('not_log.html', genres=genre_list, top=rand_books)
 
 
@@ -121,8 +120,10 @@ def not_log():
 @login_required
 def main_route():
     with session_scope() as session:
-        genre_list = session.query(Genre)
-    return render_template('home.html', genres=genre_list)
+        genre_list = session.query(Genre).all()
+        print(genre_list)
+        rand_books = get_random_books(session, count=3)
+        return render_template('home.html', genres=genre_list, top=rand_books)
 
 
 @main_blueprint.route('/login', methods=["GET", "POST"])
@@ -134,8 +135,6 @@ def login():
             if user and check_password_hash(user.password_hash, form.password.data):
                 code = ''.join(random.sample([str(x) for x in range(10)], 4))
                 form_code = CodeForm()
-                print(user)
-                print(user.email)
                 return render_template('enter_code.html', code=code, form=form_code, user_email=user.email)
         flash('Login failed', 'danger')
     return render_template('login.html', form=form)

@@ -5,5 +5,26 @@
     <div class="card w-25 text-center" role="button" onclick="location.href='#">Корзина</div>
     <div class="card w-25 text-center" role="button" onclick="location.href='{{ url_for('main.logout') }}';">Выход</div>
 {% endblock %}
-{% block top %}Топ 3 книг: {% endblock %}
+{% block top %}
+<div>
+    <h2 class="m-4">ТОП-3 книги недели</h2>
+    <div class="d-flex justify-content-around mb-4">
+        {% for item in top %}
+                <div class="card border-0 align-items-center" onclick="location.href='#';" role="button">
+                      <img src="https://content.img-gorod.ru/pim/products/images/f1/0e/018fa2d6-0649-7070-ab14-c5b66029f10e.jpg?width=0&height=1200&fit=bounds" class="card-img-top bg-light w-50" alt="...">
+                      <div class="card-body">
+                        <h5 class="card-title gap-4 m-0">{{item.title}}</h5>
+                        <div class="d-flex gap-4 m-0">
+                            <p class="card-text m-0">{{item.author}}</p>
+                            <p class="card-text m-0">{{item.year}}</p>
+                        </div>
+                        <p class="card-text font-weight-bold m-0">{{item.price}} P</p>
+                        <p class="card-text m-0">Рейтинг: {{item.rating}} </p>
+                        <a href="#" class="btn btn-primary">Купить</a>
+                      </div>
+                </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
 
