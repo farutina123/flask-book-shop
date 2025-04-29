@@ -1,5 +1,5 @@
 from flask_login import UserMixin
-from sqlalchemy import Column, Integer, String, Float
+from sqlalchemy import Column, Integer, String, Float, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 import uuid
 from sqlalchemy.dialects.postgresql import UUID
@@ -31,3 +31,12 @@ class Genre(Base):
     __tablename__ = "genres"
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     title = Column(String)
+
+
+class Review(Base):
+    __tablename__ = "reviews"
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    review_book = Column(String)
+    book_id = Column(UUID(as_uuid=True), ForeignKey('book.id'))
+    user_id = Column(Integer, ForeignKey('user.id'))
+    rating = Column(Integer)

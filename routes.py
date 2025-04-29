@@ -1,7 +1,7 @@
 from flask import Blueprint, flash, redirect, url_for, render_template, request
 from flask_login import login_user, login_required, current_user, logout_user
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField
+from wtforms import StringField, PasswordField, TextAreaField, RadioField
 from wtforms.validators import InputRequired, Length, Email, EqualTo
 from db.database import session_scope
 from db.models import User, Book, Genre
@@ -10,8 +10,8 @@ import random
 import email_validator
 from click import confirm
 import json
-from sqlalchemy import cast, String
-from sqlalchemy.sql.expression import func
+from sqlalchemy import cast, String, Integer
+from sqlalchemy.sql.expression import func, text, select
 
 main_blueprint = Blueprint('main', __name__, url_prefix='/')
 
@@ -30,6 +30,12 @@ class LoginForm(FlaskForm):
 
 class CodeForm(FlaskForm):
     code = StringField('SMS', validators=[InputRequired(), Length(max=4, min=4)])
+
+
+class ReviewForm(FlaskForm):
+    rating = RadioField('оценка', choices=[
+        ('5', '5'), ('4', '4'), ('3', '3'), ('2', '2'), ('1', '1'),])
+    review = TextAreaField('Ваш отзыв', validators=[InputRequired(), Length(max=200, min=4)])
 
 
 @main_blueprint.route('/enter_code/<code>/<user_email>', methods=["GET", "POST"])
@@ -93,8 +99,14 @@ def get_random_books(session, count=3):
     return random_books
 
 
-@main_blueprint.route('/')
+@main_blueprint.route('/', methods=["GET", "POST"])
 def not_log():
+    if request.method == 'POST':
+        search = request.form['search']
+        with session_scope() as session:
+            genre_list = session.query(Genre).all()
+            filter_book = session.query(Book).filter(Book.title.ilike(f'%{search}%')).all()
+            return render_template('genre_not_log.html', books_list=filter_book, title=search, genres=genre_list)
     with open('books_catalog.json', encoding='utf-8') as f:
         data = json.load(f)
     for item in data:
@@ -116,12 +128,17 @@ def not_log():
         return render_template('not_log.html', genres=genre_list, top=rand_books)
 
 
-@main_blueprint.route('/main')
+@main_blueprint.route('/main', methods=["GET", "POST"])
 @login_required
 def main_route():
+    if request.method == 'POST':
+        search = request.form['search']
+        with session_scope() as session:
+            genre_list = session.query(Genre).all()
+            filter_book = session.query(Book).filter(Book.title.ilike(f'%{search}%')).all()
+            return render_template('genre_home.html', books_list=filter_book, title=search, genres=genre_list)
     with session_scope() as session:
         genre_list = session.query(Genre).all()
-        print(genre_list)
         rand_books = get_random_books(session, count=3)
         return render_template('home.html', genres=genre_list, top=rand_books)
 
@@ -144,3 +161,94 @@ def login():
 def logout():
     logout_user()
     return redirect(url_for('main.not_log'))
+
+
+@main_blueprint.route('/genre_log/<title_genre>', methods=["GET", "POST"])
+@login_required
+def group_of_genre_home(title_genre):
+    if request.method == 'POST':
+        search = request.form['search']
+        with session_scope() as session:
+            genre_list = session.query(Genre).all()
+            filter_book = session.query(Book).filter(Book.title.ilike(f'%{search}%')).all()
+            return render_template('genre_home.html', books_list=filter_book, title=search, genres=genre_list)
+    with session_scope() as session:
+        books_list = session.query(Book).filter_by(genre=title_genre)
+        genre_list = session.query(Genre)
+    return render_template('genre_home.html', genres=genre_list, title=title_genre, books_list=books_list)
+
+
+@main_blueprint.route('/genre/<title_genre>', methods=["GET", "POST"])
+def group_of_genre(title_genre):
+    if request.method == 'POST':
+        search = request.form['search']
+        with session_scope() as session:
+            genre_list = session.query(Genre).all()
+            filter_book = session.query(Book).filter(Book.title.ilike(f'%{search}%')).all()
+            return render_template('genre_not_log.html', books_list=filter_book, title=search, genres=genre_list)
+    with session_scope() as session:
+        books_list = session.query(Book).filter_by(genre=title_genre)
+        genre_list = session.query(Genre)
+    return render_template('genre_not_log.html', genres=genre_list, title=title_genre, books_list=books_list)
+
+
+@main_blueprint.route('/book_page/<id_book>', methods=["GET", "POST"])
+def book_page(id_book):
+    if request.method == 'POST':
+        search = request.form['search']
+        with session_scope() as session:
+            genre_list = session.query(Genre).all()
+            filter_book = session.query(Book).filter(Book.title.ilike(f'%{search}%')).all()
+            return render_template('genre_not_log.html', books_list=filter_book, title=search, genres=genre_list)
+    with session_scope() as session:
+        genre_list = session.query(Genre).all()
+        book = session.query(Book).filter(cast(Book.id, String) == id_book).first()
+        return render_template('book_page.html', book=book, genres=genre_list)
+
+@main_blueprint.route('/book_page_review/<id_book>', methods=["GET", "POST"])
+@login_required
+def book_page_review(id_book):
+    if request.method == 'POST':
+        search = request.form['search']
+        with session_scope() as session:
+            genre_list = session.query(Genre).all()
+            filter_book = session.query(Book).filter(Book.title.ilike(f'%{search}%')).all()
+            return render_template('genre_home.html', books_list=filter_book, title=search, genres=genre_list)
+    with session_scope() as session:
+        genre_list = session.query(Genre).all()
+        book = session.query(Book).filter(cast(Book.id, String) == id_book).first()
+        return render_template('book_page_review.html', book=book, genres=genre_list)
+
+
+@main_blueprint.route('/review/<id_book>', methods=["GET", "POST"])
+@login_required
+def review_info(id_book):
+    form = ReviewForm()
+    if not request.method == 'POST':
+        return render_template('review.html', form=form, book=id_book)
+    print(id_book, current_user.username, form.review.data, form.rating.data, type(form.rating.data))
+    rating_int = int(form.rating.data)
+    print(type(rating_int))
+    review =
+    with session_scope() as session:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

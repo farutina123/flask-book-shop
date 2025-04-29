@@ -1,5 +1,5 @@
 {% extends "base_home.html" %}
-{% block title %}shop{% endblock %}
+{% block title %}{{title}}{% endblock %}
 {% block genre_list %}
 <div class="card w-25">
     <div class="card-body" onmouseover="this.style.backgroundColor='#e8e9ea';"
@@ -18,12 +18,12 @@
     <div class="card w-25 text-center" role="button" onclick="location.href='/login';">Вход</div>
     <div class="card w-25 text-center" role="button" onclick="location.href='/register';">Регистрация</div>
 {% endblock %}
-{% block top %}
+{% block body_genre %}
 <div>
-    <h2 class="m-4">ТОП-3 книги недели</h2>
-    <div class="d-flex justify-content-around mb-4">
-        {% for item in top %}
-                <div class="card border-0 align-items-center" onclick="location.href='/book_page/{{item.id}}';" role="button">
+    <h2 class="m-4">Книги категории "{{title}}"</h2>
+    <div class="d-flex flex-wrap">
+        {% for item in books_list %}
+                <div class="card border-0 align-items-center w-25" onclick="location.href='/book_page/{{item.id}}';" role="button">
                       <img src="https://content.img-gorod.ru/pim/products/images/f1/0e/018fa2d6-0649-7070-ab14-c5b66029f10e.jpg?width=0&height=1200&fit=bounds" class="card-img-top bg-light w-50 "  alt="...">
                       <div class="card-body">
                         <h5 class="card-title m-0">{{item.title}}</h5>
