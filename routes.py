@@ -4,13 +4,13 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, TextAreaField, RadioField
 from wtforms.validators import InputRequired, Length, Email, EqualTo
 from db.database import session_scope
-from db.models import User, Book, Genre
+from db.models import User, Book, Genre, Reviews
 from werkzeug.security import generate_password_hash, check_password_hash
 import random
 import email_validator
 from click import confirm
 import json
-from sqlalchemy import cast, String, Integer
+from sqlalchemy import cast, String, Integer, UUID, Uuid
 from sqlalchemy.sql.expression import func, text, select
 
 main_blueprint = Blueprint('main', __name__, url_prefix='/')
@@ -34,7 +34,7 @@ class CodeForm(FlaskForm):
 
 class ReviewForm(FlaskForm):
     rating = RadioField('оценка', choices=[
-        ('5', '5'), ('4', '4'), ('3', '3'), ('2', '2'), ('1', '1'),])
+        ('1', '1'), ('2', '2'), ('3', '3'), ('4', '4'), ('5', '5')])
     review = TextAreaField('Ваш отзыв', validators=[InputRequired(), Length(max=200, min=4)])
 
 
@@ -226,11 +226,27 @@ def review_info(id_book):
     form = ReviewForm()
     if not request.method == 'POST':
         return render_template('review.html', form=form, book=id_book)
-    print(id_book, current_user.username, form.review.data, form.rating.data, type(form.rating.data))
-    rating_int = int(form.rating.data)
-    print(type(rating_int))
-    review =
+    review = Reviews(review_book=form.review.data, book_id=id_book, user_id=current_user.id, rating=int(form.rating.data))
     with session_scope() as session:
+        session.add(review)
+    with session_scope() as session:
+        book_reviews_list = session.query(Reviews).filter_by(book_id=id_book).all()
+        res_sum = 0
+        for i in book_reviews_list:
+            res_sum += i.rating
+        res = res_sum/len(book_reviews_list)
+        print(res)
+        session.commit()
+        # book = session.query(Book).filter(str(Book.id) == id_book).first()
+        book = session.query(Book).filter(cast(Book.id, String) == id_book).first()
+        session.commit()
+        if book:
+            print('yes')
+        else: print('(((((')
+        print(book.title)
+
+
+
 
 
 

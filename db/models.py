@@ -33,10 +33,10 @@ class Genre(Base):
     title = Column(String)
 
 
-class Review(Base):
-    __tablename__ = "reviews"
+class Reviews(Base):
+    __tablename__ = "reviews_"
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     review_book = Column(String)
-    book_id = Column(UUID(as_uuid=True), ForeignKey('book.id'))
-    user_id = Column(Integer, ForeignKey('user.id'))
+    book_id = Column(String, ForeignKey('books.id'))
+    user_id = Column(Integer, ForeignKey('users.id'))
     rating = Column(Integer)
