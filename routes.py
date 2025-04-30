@@ -4,7 +4,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, TextAreaField, RadioField
 from wtforms.validators import InputRequired, Length, Email, EqualTo
 from db.database import session_scope
-from db.models import User, Book, Genre, Reviews
+from db.models import User, Book, Genre, Review
 from werkzeug.security import generate_password_hash, check_password_hash
 import random
 import email_validator
@@ -226,21 +226,20 @@ def review_info(id_book):
     form = ReviewForm()
     if not request.method == 'POST':
         return render_template('review.html', form=form, book=id_book)
-    review = Reviews(review_book=form.review.data, book_id=id_book, user_id=current_user.id, rating=int(form.rating.data))
+    review = Review(review_book=form.review.data, book_id=id_book, user_id=current_user.id, rating=int(form.rating.data))
     with session_scope() as session:
         session.add(review)
     with session_scope() as session:
-        book_reviews_list = session.query(Reviews).filter_by(book_id=id_book).all()
+        book_reviews_list = session.query(Review).filter_by(book_id=id_book).all()
         res_sum = 0
         for i in book_reviews_list:
             res_sum += i.rating
         res = res_sum/len(book_reviews_list)
         print(res)
         session.commit()
-        # book = session.query(Book).filter(str(Book.id) == id_book).first()
         book = session.query(Book).filter(cast(Book.id, String) == id_book).first()
-        session.commit()
         if book:
+            book.rating = res
             print('yes')
         else: print('(((((')
         print(book.title)
