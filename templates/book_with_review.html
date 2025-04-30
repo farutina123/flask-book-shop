@@ -1,8 +1,12 @@
 {% extends "book_page_review.html" %}
 {% block reviews %}
-<div>
-    {% for item in list %}
-
+<div class="d-flex flex-column">
+    {% for item in list_reviews %}
+        <div class="card d-flex flex-column m-2 p-4 gap-3 bg-light">
+            <div>{{current_user.username}}</div>
+            <div>Оценка: {{item.rating}}</div>
+            <div>{{item.review_book}}</div>
+        </div>
     {% endfor %}
 </div>
 {% endblock %}

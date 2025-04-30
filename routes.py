@@ -4,7 +4,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, TextAreaField, RadioField
 from wtforms.validators import InputRequired, Length, Email, EqualTo
 from db.database import session_scope
-from db.models import User, Book, Genre, Review
+from db.models import User, Book, Genre, Review, CartItem
 from werkzeug.security import generate_password_hash, check_password_hash
 import random
 import email_validator
@@ -209,6 +209,7 @@ def book_page(id_book):
 @login_required
 def book_page_review(id_book):
     if request.method == 'POST':
+        print('true')
         search = request.form['search']
         with session_scope() as session:
             genre_list = session.query(Genre).all()
@@ -217,6 +218,10 @@ def book_page_review(id_book):
     with session_scope() as session:
         genre_list = session.query(Genre).all()
         book = session.query(Book).filter(cast(Book.id, String) == id_book).first()
+        book_reviews_list = session.query(Review).filter_by(book_id=id_book).all()
+        if book_reviews_list:
+            return render_template("book_with_review.html", genres=genre_list, book=book,
+                                   list_reviews=book_reviews_list)
         return render_template('book_page_review.html', book=book, genres=genre_list)
 
 
@@ -226,7 +231,8 @@ def review_info(id_book):
     form = ReviewForm()
     if not request.method == 'POST':
         return render_template('review.html', form=form, book=id_book)
-    review = Review(review_book=form.review.data, book_id=id_book, user_id=current_user.id, rating=int(form.rating.data))
+    print('false')
+    review = Review(review_book=form.review.data, book_id=id_book, user_id=current_user.id, rating=float(form.rating.data))
     with session_scope() as session:
         session.add(review)
     with session_scope() as session:
@@ -235,23 +241,21 @@ def review_info(id_book):
         for i in book_reviews_list:
             res_sum += i.rating
         res = res_sum/len(book_reviews_list)
-        print(res)
         session.commit()
         book = session.query(Book).filter(cast(Book.id, String) == id_book).first()
-        if book:
-            book.rating = res
-            print('yes')
-        else: print('(((((')
-        print(book.title)
+        book.rating = round(res, 2)
+        session.commit()
+        return redirect(url_for('main.book_page_review', id_book=book.id))
 
 
-
-
-
-
-
-
-
+@main_blueprint.route('/buy/<id_book>')
+@login_required
+def review_info(id_book):
+    with session_scope() as session:
+        test_book = session.query(CartItem).filter(cast(CartItem.book_id, String) == id_book, CartItem.user_id == current_user.id).first()
+        if test_book:
+            print("норм")
+        else: print("не норм")
 
 
 

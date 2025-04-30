@@ -14,9 +14,11 @@
         {% block genre_list %}{% endblock %}
         <div class="d-flex flex-column justify-content-between w-100 gap-2">
             <div class="d-flex justify-content-between gap-2">
+                {% block search%}
                 <form method="POST" id="search" class="w-50">
                     <input class="input-group" placeholder="Поиск" name= "search" type="text" id="searchText">
                 </form>
+                {% endblock %}
                 {% block content %}{% endblock %}
             </div>
             <div class="card text-center">{% block top %}{% endblock %}</div>
