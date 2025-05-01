@@ -248,15 +248,60 @@ def review_info(id_book):
         return redirect(url_for('main.book_page_review', id_book=book.id))
 
 
-@main_blueprint.route('/buy/<id_book>')
+@main_blueprint.route('/buy/<id_book>/<path>')
 @login_required
-def review_info(id_book):
+def buy(id_book, path):
     with session_scope() as session:
         test_book = session.query(CartItem).filter(cast(CartItem.book_id, String) == id_book, CartItem.user_id == current_user.id).first()
         if test_book:
-            print("норм")
-        else: print("не норм")
+            test_book.count += 1
+        else:
+            cart_item = CartItem(book_id=id_book, user_id=current_user.id)
+            session.add(cart_item)
+            session.commit()
+    if path == 'book_page_review':
+        flash('книга добавлена в корзину', 'info')
+        return redirect(url_for('main.book_page_review', id_book=id_book))
+    flash('книга добавлена в корзину', 'info')
+    return redirect(url_for('main.main_route', id_book=id_book))
 
+
+@main_blueprint.route('/buy_genre/<id_book>/<title>')
+@login_required
+def buy_genre(id_book, title):
+    with session_scope() as session:
+        test_book = session.query(CartItem).filter(cast(CartItem.book_id, String) == id_book, CartItem.user_id == current_user.id).first()
+        if test_book:
+            test_book.count += 1
+        else:
+            cart_item = CartItem(book_id=id_book, user_id=current_user.id)
+            session.add(cart_item)
+            session.commit()
+    flash('книга добавлена в корзину', 'info')
+    return redirect(url_for('main.group_of_genre_home', title_genre=title))
+
+
+@main_blueprint.route('/cart')
+@login_required
+def cart():
+    cart_list = []
+    res=0
+    with session_scope() as session:
+        cart_list_db = session.query(CartItem).filter_by(user_id=current_user.id).all()
+        for item in cart_list_db:
+            book = session.query(Book).filter_by(id=item.book_id).first()
+            list_item = {
+                'title': book.title,
+                'author': book.author,
+                'price': book.price,
+                'count': item.count
+            }
+            cart_list.append(list_item)
+        for i in cart_list:
+            res += i['price']*i['count']
+        genre_list = session.query(Genre).all()
+        session.commit()
+        return render_template('cart.html', genres=genre_list, books_list=cart_list, itog=res)
 
 
 

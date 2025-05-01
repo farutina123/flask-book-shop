@@ -21,6 +21,13 @@
 {% endblock %}
 {% block body_genre %}
 <div>
+    <div>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}<div class=" mt-1 alert alert-{{ category }}">{{message}}</div>{% endfor %}
+                {% endif %}
+        {% endwith %}
+    </div>
     <h2 class="m-4">Книги категории {{title}}</h2>
     <div class="d-flex flex-wrap">
         {% for item in books_list %}
@@ -36,7 +43,7 @@
                               <h6 class="card-text font-weight-bold m-0">{{item.price}} P</h6>
                             <p class="card-text m-0">Рейтинг: {{item.rating}} </p>
                           </div>
-                          <a href="#" class="btn btn-primary">Купить</a>
+                          <a href="/buy_genre/{{item.id}}/{{title}}" class="btn btn-primary">Купить</a>
                       </div>
                 </div>
         {% endfor %}

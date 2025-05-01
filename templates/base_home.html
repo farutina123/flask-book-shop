@@ -28,11 +28,6 @@
                 <div class="card w-100">Способ доставки:</div>
                 <div class="card w-100">Способ оплаты:</div>
             </div>
-            {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
-                    {% for category, message in messages %}<div class=" mt-1 alert alert-{{ category }}">{{message}}</div>{% endfor %}
-                {% endif %}
-            {% endwith %}
         </div>
     </div>
 </body>
