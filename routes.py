@@ -412,3 +412,38 @@ def orders_page():
         genre_list = session.query(Genre).all()
         list_order = session.query(Order).filter_by(user_id=current_user.id).all()
         return render_template('orders_list.html', genres=genre_list, books_list=list_order)
+
+
+@main_blueprint.route('/order_page/<id_order>', methods=["GET", "POST"])
+@login_required
+def order_page(id_order):
+    if request.method == 'POST':
+        search = request.form['search']
+        with session_scope() as session:
+            genre_list = session.query(Genre).all()
+            filter_book = session.query(Book).filter(Book.title.ilike(f'%{search}%')).all()
+            return render_template('genre_home.html', books_list=filter_book, title=search, genres=genre_list)
+    order_list = []
+    res = 0
+    with session_scope() as session:
+        orderitem_list = session.query(OrderItem).filter_by(order_id=id_order).all()
+        order = session.query(Order).filter(Order.id == id_order).first()
+        status = order.status
+        address = order.address
+        for item in orderitem_list:
+            book = session.query(Book).filter_by(id=item.book_id).first()
+            list_item = {
+                'title': book.title,
+                'author': book.author,
+                'price': book.price,
+                'count': item.count,
+                'price_count': round(book.price*item.count, 2),
+                'book_id': book.id
+            }
+            order_list.append(list_item)
+        for i in order_list:
+            res += i['price']*i['count']
+        genre_list = session.query(Genre).all()
+        return render_template('order.html', genres=genre_list,
+                               books_list=order_list, id=id_order, status=status, itog=res,
+                               address=address, user=current_user.username, date=order.date)
