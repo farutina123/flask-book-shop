@@ -1,0 +1,37 @@
+{% extends "base_home.html" %}
+{% block title %}Orders{% endblock %}
+{% block genre_list %}
+<div class="card w-25">
+    <div class="card-body" onmouseover="this.style.backgroundColor='#e8e9ea';"
+             onmouseout="this.style.backgroundColor='#fff';"
+             onclick="location.href='/main';" role="button">Главная</div>
+    {% for genre in genres %}
+        <div class="card-body" onmouseover="this.style.backgroundColor='#e8e9ea';"
+             onmouseout="this.style.backgroundColor='#fff';"
+             onclick="location.href='/genre_log/{{genre.title}}';" role="button">
+            {{genre.title }}
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}
+{% block content %}
+    <div class="card w-25 text-center" role="button" onclick="location.href='/orders_page'">Заказы</div>
+    <div class="card w-25 text-center" role="button" onclick="location.href='/cart'">Корзина</div>
+    <div class="card w-25 text-center" role="button" onclick="location.href='{{ url_for('main.logout') }}';">Выход</div>
+{% endblock %}
+{% block body_genre %}
+<div class="m-5">
+    <h2 class="text-center">Заказы</h2>
+    <div class="d-flex flex-column gap-4 mb-5 m-auto">
+        <div class="d-flex flex-column">
+            {% for item in books_list %}
+                    <div class="d-flex border m-2 p-3 justify-content-between" onclick="location.href='#';" role="button">
+                            <h5 class="card-title m-0">{{item.date}}</h5>
+                              <p class="card-text m-0">{{item.status}}</p>
+                              <h6 class="card-text font-weight-bold m-0">{{item.price}} P</h6>
+                    </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

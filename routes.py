@@ -4,7 +4,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, TextAreaField, RadioField
 from wtforms.validators import InputRequired, Length, Email, EqualTo
 from db.database import session_scope
-from db.models import User, Book, Genre, Review, CartItem
+from db.models import User, Book, Genre, Review, CartItem, OrderItem, Order
 from werkzeug.security import generate_password_hash, check_password_hash
 import random
 import email_validator
@@ -12,7 +12,7 @@ from click import confirm
 import json
 from sqlalchemy import cast, String, Integer, UUID, Uuid
 from sqlalchemy.sql.expression import func, text, select
-
+from datetime import date
 main_blueprint = Blueprint('main', __name__, url_prefix='/')
 
 
@@ -36,6 +36,15 @@ class ReviewForm(FlaskForm):
     rating = RadioField('оценка', choices=[
         ('1', '1'), ('2', '2'), ('3', '3'), ('4', '4'), ('5', '5')])
     review = TextAreaField('Ваш отзыв', validators=[InputRequired(), Length(max=200, min=4)])
+
+
+class OrderForm(FlaskForm):
+    type_address = RadioField('выберите способ доставки', choices=[
+        ('self', 'самовывоз'), ('door', 'до двери')])
+
+
+class AddressForm(FlaskForm):
+    address = TextAreaField('Ваш адрес', validators=[InputRequired(), Length(max=200, min=4)])
 
 
 @main_blueprint.route('/enter_code/<code>/<user_email>', methods=["GET", "POST"])
@@ -341,12 +350,65 @@ def edit_cart(action, id_book):
                 return redirect(url_for('main.cart'))
 
 
+@main_blueprint.route('/type_address/<itog>', methods=["GET", "POST"])
+@login_required
+def type_address(itog):
+    form=OrderForm()
+    form_address=AddressForm()
+    if request.method == "POST":
+        if form.type_address.data == 'door':
+            return render_template('form_address.html', form=form_address, itog=itog)
+        date_today = date.today()
+        order_new = Order(date=date_today, user_id=current_user.id, address=form.type_address.data, price=itog)
+        with session_scope() as session:
+            session.add(order_new)
+            session.commit()
+            id_order = order_new.id
+            cart_list_db = session.query(CartItem).filter_by(user_id=current_user.id).all()
+            for item in cart_list_db:
+                book = session.query(Book).filter_by(id=item.book_id).first()
+                orderitem_new = OrderItem(book_id=item.book_id, order_id=id_order, count=item.count, price=book.price)
+                session.add(orderitem_new)
+                session.commit()
+            session.query(CartItem).delete()
+            return redirect(url_for('main.orders_page'))
+    return render_template('form_order.html', summa=itog, user=current_user, form=form)
 
 
+@main_blueprint.route('/order/<itog>', methods=["GET", "POST"])
+@login_required
+def order(itog):
+    form=AddressForm()
+    if form.validate_on_submit():
+        date_today = date.today()
+        order_new = Order(date=date_today, user_id=current_user.id, address=form.address.data, price=itog)
+        with session_scope() as session:
+            session.add(order_new)
+            session.commit()
+            id_order = order_new.id
+            cart_list_db = session.query(CartItem).filter_by(user_id=current_user.id).all()
+            for item in cart_list_db:
+                book = session.query(Book).filter_by(id=item.book_id).first()
+                orderitem_new = OrderItem(book_id=item.book_id, order_id=id_order, count=item.count, price=book.price)
+                session.add(orderitem_new)
+                session.commit()
+            session.query(CartItem).delete()
+            return redirect(url_for('main.orders_page'))
+    elif form.errors:
+        flash(form.errors, category='danger')
+    return render_template('form_address.html', form=form)
 
 
-
-
-
-
-
+@main_blueprint.route('/orders_page', methods=["GET", "POST"])
+@login_required
+def orders_page():
+    if request.method == 'POST':
+        search = request.form['search']
+        with session_scope() as session:
+            genre_list = session.query(Genre).all()
+            filter_book = session.query(Book).filter(Book.title.ilike(f'%{search}%')).all()
+            return render_template('genre_home.html', books_list=filter_book, title=search, genres=genre_list)
+    with session_scope() as session:
+        genre_list = session.query(Genre).all()
+        list_order = session.query(Order).filter_by(user_id=current_user.id).all()
+        return render_template('orders_list.html', genres=genre_list, books_list=list_order)

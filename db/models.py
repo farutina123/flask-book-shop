@@ -1,5 +1,5 @@
 from flask_login import UserMixin
-from sqlalchemy import Column, Integer, String, Float, ForeignKey
+from sqlalchemy import Column, Integer, String, Float, ForeignKey, Date
 from sqlalchemy.ext.declarative import declarative_base
 import uuid
 from sqlalchemy.dialects.postgresql import UUID
@@ -50,3 +50,20 @@ class CartItem(Base):
     count = Column(Integer, default=1)
 
 
+class Order(Base):
+    __tablename__ = "orders"
+    id = Column(Integer, primary_key=True)
+    date = Column(Date)
+    status = Column(String, default='Новый')
+    user_id = Column(Integer, ForeignKey('users.id'))
+    address = Column(String)
+    price = Column(Float)
+
+
+class OrderItem(Base):
+    __tablename__ = "orderitems"
+    id = Column(Integer, primary_key=True)
+    book_id = Column(UUID(as_uuid=True), ForeignKey('books.id'))
+    order_id = Column(Integer, ForeignKey('orders.id'))
+    count = Column(Integer)
+    price = Column(Float)
