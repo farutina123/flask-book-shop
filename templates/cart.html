@@ -25,14 +25,18 @@
     <div class="d-flex flex-column gap-4 w-75 mb-5 m-auto">
         <div class="d-flex flex-column">
             {% for item in books_list %}
-                    <div class="d-flex border m-2 p-3 justify-content-between" onclick="location.href='/book_page_review/{{item.id}}';" role="button">
+                    <div class="d-flex border m-2 p-3 justify-content-between" onclick="location.href='/book_page_review/{{item.book_id}}';" role="button">
                           <img src="https://content.img-gorod.ru/pim/products/images/f1/0e/018fa2d6-0649-7070-ab14-c5b66029f10e.jpg?width=0&height=1200&fit=bounds" class="card-img-top bg-light w-25 "  alt="...">
                           <div class="d-flex flex-column justify-content-around">
                             <h5 class="card-title m-0">{{item.title}}</h5>
                               <p class="card-text m-0">{{item.author}}</p>
                               <h6 class="card-text font-weight-bold m-0">{{item.price}} P * {{item.count}} шт.</h6>
-                              <div>{{item.price*item.count}}</div>
-                              <a href="#" class="btn btn-primary">Удалить</a>
+                              <div class="d-flex gap-2">
+                                  <a href="/edit_cart/{{'+'}}/{{item.book_id}}" class="btn btn-primary w-25">+</a>
+                                  <a href="/edit_cart/{{'-'}}/{{item.book_id}}" class="btn btn-primary w-25">-</a>
+                              </div>
+                              <div>{{item.price_count}}</div>
+                              <a href="/edit_cart/{{'del'}}/{{item.book_id}}" class="btn btn-primary">Удалить</a>
                           </div>
                     </div>
             {% endfor %}

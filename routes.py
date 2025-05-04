@@ -209,7 +209,6 @@ def book_page(id_book):
 @login_required
 def book_page_review(id_book):
     if request.method == 'POST':
-        print('true')
         search = request.form['search']
         with session_scope() as session:
             genre_list = session.query(Genre).all()
@@ -231,7 +230,6 @@ def review_info(id_book):
     form = ReviewForm()
     if not request.method == 'POST':
         return render_template('review.html', form=form, book=id_book)
-    print('false')
     review = Review(review_book=form.review.data, book_id=id_book, user_id=current_user.id, rating=float(form.rating.data))
     with session_scope() as session:
         session.add(review)
@@ -281,9 +279,15 @@ def buy_genre(id_book, title):
     return redirect(url_for('main.group_of_genre_home', title_genre=title))
 
 
-@main_blueprint.route('/cart')
+@main_blueprint.route('/cart', methods=["GET", "POST"])
 @login_required
 def cart():
+    if request.method == 'POST':
+        search = request.form['search']
+        with session_scope() as session:
+            genre_list = session.query(Genre).all()
+            filter_book = session.query(Book).filter(Book.title.ilike(f'%{search}%')).all()
+            return render_template('genre_home.html', books_list=filter_book, title=search, genres=genre_list)
     cart_list = []
     res=0
     with session_scope() as session:
@@ -294,17 +298,47 @@ def cart():
                 'title': book.title,
                 'author': book.author,
                 'price': book.price,
-                'count': item.count
+                'count': item.count,
+                'book_id':item.book_id,
+                'price_count': round(book.price*item.count, 2)
             }
             cart_list.append(list_item)
         for i in cart_list:
             res += i['price']*i['count']
         genre_list = session.query(Genre).all()
         session.commit()
-        return render_template('cart.html', genres=genre_list, books_list=cart_list, itog=res)
+        return render_template('cart.html', genres=genre_list, books_list=cart_list, itog=round(res, 2))
 
 
-
+@main_blueprint.route('/edit_cart/<action>/<id_book>')
+@login_required
+def edit_cart(action, id_book):
+    match action:
+        case '+':
+            with session_scope() as session:
+                cart_item = session.query(CartItem).filter(cast(CartItem.book_id, String) == id_book,
+                                                           CartItem.user_id == current_user.id).first()
+                cart_item.count += 1
+                session.commit()
+                return redirect(url_for('main.cart'))
+        case '-':
+            with session_scope() as session:
+                cart_item = session.query(CartItem).filter(cast(CartItem.book_id, String) == id_book,
+                                                           CartItem.user_id == current_user.id).first()
+                if cart_item.count == 1:
+                    session.delete(cart_item)
+                    session.commit()
+                    return redirect(url_for('main.cart'))
+                cart_item.count -= 1
+                session.commit()
+                return redirect(url_for('main.cart'))
+        case 'del':
+            with session_scope() as session:
+                cart_item = session.query(CartItem).filter(cast(CartItem.book_id, String) == id_book,
+                                                           CartItem.user_id == current_user.id).first()
+                session.delete(cart_item)
+                session.commit()
+                return redirect(url_for('main.cart'))
 
 
 

@@ -16,7 +16,7 @@
 {% endblock %}
 {% block content %}
     <div class="card w-25 text-center" role="button" onclick="location.href='#">Заказы</div>
-    <div class="card w-25 text-center" role="button" onclick="location.href='#">Корзина</div>
+    <div class="card w-25 text-center" role="button" onclick="location.href='/cart'">Корзина</div>
     <div class="card w-25 text-center" role="button" onclick="location.href='{{ url_for('main.logout') }}';">Выход</div>
 {% endblock %}
 {% block body_genre %}

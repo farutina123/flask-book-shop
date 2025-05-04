@@ -48,3 +48,5 @@ class CartItem(Base):
     book_id = Column(UUID(as_uuid=True), ForeignKey('books.id'))
     user_id = Column(Integer, ForeignKey('users.id'))
     count = Column(Integer, default=1)
+
+
