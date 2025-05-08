@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "form/base.html" %}
 {% block title %}Login{% endblock %}
 {% block content %}
     <h2 class="text-center mb-4">Login</h2>
@@ -9,7 +9,7 @@
         <button type="submit" class="btn btn-primary w-100">Login</button>
     </form>
     <p class="text-center mt-3">
-        Don`t have an account? <a href="{{ url_for('main.register') }}">Register</a>
+        Don`t have an account? <a href="{{ url_for('user.register') }}">Register</a>
         <a href="/">На главную</a>
     </p>
 {% endblock %}

@@ -1,23 +1,22 @@
-{% extends "base_home.html" %}
+{% extends "genre/base_home.html" %}
 {% block title %}{{book.title}}{% endblock %}
 {% block genre_list %}
 <div class="card w-25">
     <div class="card-body" onmouseover="this.style.backgroundColor='#e8e9ea';"
              onmouseout="this.style.backgroundColor='#fff';"
-             onclick="location.href='/main';" role="button">Главная</div>
+             onclick="location.href='/';" role="button">Главная</div>
     {% for genre in genres %}
         <div class="card-body" onmouseover="this.style.backgroundColor='#e8e9ea';"
              onmouseout="this.style.backgroundColor='#fff';"
-             onclick="location.href='/genre_log/{{genre.title}}';" role="button">
+             onclick="location.href='/genre/{{genre.title}}';" role="button">
             {{genre.title }}
         </div>
     {% endfor %}
 </div>
 {% endblock %}
 {% block content %}
-    <div class="card w-25 text-center" role="button" onclick="location.href='/orders_page'">Заказы</div>
-    <div class="card w-25 text-center" role="button" onclick="location.href='/cart'">Корзина</div>
-    <div class="card w-25 text-center" role="button" onclick="location.href='{{ url_for('main.logout') }}';">Выход</div>
+    <div class="card w-25 text-center" role="button" onclick="location.href='/login';">Вход</div>
+    <div class="card w-25 text-center" role="button" onclick="location.href='/register';">Регистрация</div>
 {% endblock %}
 {% block body_genre %}
 <div class="d-flex flex-column m-4">
@@ -41,20 +40,10 @@
             </div>
           </div>
       </div>
-      <div class="d-flex flex-column justify-content-around card-body border gap-4 h-50 m-4">
+      <div class="d-flex flex-column justify-content-around card-body border gap-4 h-50">
           <h4 class="card-text font-weight-bold">{{book.price}} P</h4>
-           <a href="/buy/{{book.id}}/{{'book_page_review'}}" class="btn btn-primary">Купить</a>
+           <a href="/login" class="btn btn-primary">Купить</a>
       </div>
     </div>
-      {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}<div class=" mt-1 alert alert-{{ category }}">{{message}}</div>{% endfor %}
-            {% endif %}
-      {% endwith %}
-    <div class="d-flex flex-column">
-        <h3>Отзывы</h3>
-        <div class="btn btn-success w-25" onclick="location.href='/review/{{book.id}}';" role="button">Оставить отзыв</div>
-    </div>
-    {% block reviews %}{% endblock %}
 </div>
 {% endblock %}

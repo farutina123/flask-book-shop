@@ -1,4 +1,4 @@
-{% extends "base_home.html" %}
+{% extends "genre/base_home.html" %}
 {% block title %}Card{% endblock %}
 {% block genre_list %}
 <div class="card w-25">
@@ -17,7 +17,7 @@
 {% block content %}
     <div class="card w-25 text-center" role="button" onclick="location.href='/orders_page'">Заказы</div>
     <div class="card w-25 text-center" role="button" onclick="location.href='/cart'">Корзина</div>
-    <div class="card w-25 text-center" role="button" onclick="location.href='{{ url_for('main.logout') }}';">Выход</div>
+    <div class="card w-25 text-center" role="button" onclick="location.href='{{ url_for('user.logout') }}';">Выход</div>
 {% endblock %}
 {% block body_genre %}
 <div class="m-5">

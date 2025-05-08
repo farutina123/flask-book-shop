@@ -1,37 +1,29 @@
-{% extends "base_home.html" %}
+{% extends "genre/base_home.html" %}
 {% block title %}{{title}}{% endblock %}
 {% block genre_list %}
 <div class="card w-25">
     <div class="card-body" onmouseover="this.style.backgroundColor='#e8e9ea';"
              onmouseout="this.style.backgroundColor='#fff';"
-             onclick="location.href='/main';" role="button">Главная</div>
+             onclick="location.href='/';" role="button">Главная</div>
     {% for genre in genres %}
         <div class="card-body" onmouseover="this.style.backgroundColor='#e8e9ea';"
              onmouseout="this.style.backgroundColor='#fff';"
-             onclick="location.href='/genre_log/{{genre.title}}';" role="button">
+             onclick="location.href='/genre/{{genre.title}}';" role="button">
             {{genre.title }}
         </div>
     {% endfor %}
 </div>
 {% endblock %}
 {% block content %}
-    <div class="card w-25 text-center" role="button" onclick="location.href='/orders_page'">Заказы</div>
-    <div class="card w-25 text-center" role="button" onclick="location.href='/cart'">Корзина</div>
-    <div class="card w-25 text-center" role="button" onclick="location.href='{{ url_for('main.logout') }}';">Выход</div>
+    <div class="card w-25 text-center" role="button" onclick="location.href='/login';">Вход</div>
+    <div class="card w-25 text-center" role="button" onclick="location.href='/register';">Регистрация</div>
 {% endblock %}
 {% block body_genre %}
 <div>
-    <div>
-        {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
-                    {% for category, message in messages %}<div class=" mt-1 alert alert-{{ category }}">{{message}}</div>{% endfor %}
-                {% endif %}
-        {% endwith %}
-    </div>
-    <h2 class="m-4">Книги категории {{title}}</h2>
+    <h2 class="m-4">Книги категории "{{title}}"</h2>
     <div class="d-flex flex-wrap">
         {% for item in books_list %}
-                <div class="card border-0 align-items-center w-25" onclick="location.href='/book_page_review/{{item.id}}';" role="button">
+                <div class="card border-0 align-items-center w-25" onclick="location.href='/book_page/{{item.id}}';" role="button">
                       <img src="https://content.img-gorod.ru/pim/products/images/f1/0e/018fa2d6-0649-7070-ab14-c5b66029f10e.jpg?width=0&height=1200&fit=bounds" class="card-img-top bg-light w-50 "  alt="...">
                       <div class="card-body">
                         <h5 class="card-title m-0">{{item.title}}</h5>
@@ -43,7 +35,7 @@
                               <h6 class="card-text font-weight-bold m-0">{{item.price}} P</h6>
                             <p class="card-text m-0">Рейтинг: {{item.rating}} </p>
                           </div>
-                          <a href="/buy_genre/{{item.id}}/{{title}}" class="btn btn-primary">Купить</a>
+                          <a href="/login" class="btn btn-primary">Купить</a>
                       </div>
                 </div>
         {% endfor %}
