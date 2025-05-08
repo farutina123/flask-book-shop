@@ -7,7 +7,7 @@ import random
 from forms.login_form import LoginForm
 from forms.code_form import CodeForm
 from forms.registration_form import RegistrationForm
-
+from book import book_photo
 
 
 user_blueprint = Blueprint('user', __name__, url_prefix='/')

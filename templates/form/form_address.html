@@ -1,7 +1,7 @@
 {% extends "form/base.html" %}
-{% block title %}FormOrder{% endblock %}
+{% block title %}Адрес{% endblock %}
 {% block content %}
-    <h2 class="text-center mb-4">Address Info</h2>
+    <h2 class="text-center mb-4">Введите адрес</h2>
     <form action="/order/{{itog}}" method="POST">
         {{ form.hidden_tag() }}
         <div class="mb-3">{{ form.address.label(class="form-label") }}{{ form.address(class="form-control") }}</div>

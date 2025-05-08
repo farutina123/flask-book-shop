@@ -4,6 +4,7 @@ from db.database import session_scope
 from db.models import Book, Genre
 import json
 from sqlalchemy.sql.expression import func
+from book import book_photo
 
 
 main_blueprint = Blueprint('main', __name__, url_prefix='/')
@@ -14,14 +15,8 @@ def get_random_books(session, count=3):
     return random_books
 
 
-@main_blueprint.route('/', methods=["GET", "POST"])
+@main_blueprint.route('/')
 def not_log():
-    if request.method == 'POST':
-        search = request.form['search']
-        with session_scope() as session:
-            genre_list = session.query(Genre).all()
-            filter_book = session.query(Book).filter(Book.title.ilike(f'%{search}%')).all()
-            return render_template('genre/genre_not_log.html', books_list=filter_book, title=search, genres=genre_list)
     with open('books_catalog.json', encoding='utf-8') as f:
         data = json.load(f)
     for item in data:
@@ -40,7 +35,7 @@ def not_log():
     with session_scope() as session:
         genre_list = session.query(Genre)
         rand_books = get_random_books(session, count=3)
-        return render_template('genre/not_log.html', genres=genre_list, top=rand_books)
+        return render_template('genre/not_log.html', photo=book_photo, genres=genre_list, top=rand_books)
 
 
 @main_blueprint.route('/main', methods=["GET", "POST"])
@@ -51,11 +46,11 @@ def main_route():
         with session_scope() as session:
             genre_list = session.query(Genre).all()
             filter_book = session.query(Book).filter(Book.title.ilike(f'%{search}%')).all()
-            return render_template('genre/genre_home.html', books_list=filter_book, title=search, genres=genre_list)
+            return render_template('genre/genre_home.html', photo=book_photo, books_list=filter_book, title=search, genres=genre_list)
     with session_scope() as session:
         genre_list = session.query(Genre).all()
         rand_books = get_random_books(session, count=3)
-        return render_template('genre/home.html', genres=genre_list, top=rand_books)
+        return render_template('genre/home.html', photo=book_photo, genres=genre_list, top=rand_books)
 
 
 @main_blueprint.route('/genre_log/<title_genre>', methods=["GET", "POST"])
@@ -66,23 +61,31 @@ def group_of_genre_home(title_genre):
         with session_scope() as session:
             genre_list = session.query(Genre).all()
             filter_book = session.query(Book).filter(Book.title.ilike(f'%{search}%')).all()
-            return render_template('genre/genre_home.html', books_list=filter_book, title=search, genres=genre_list)
+            return render_template('genre/genre_home.html', photo=book_photo, books_list=filter_book, title=search, genres=genre_list)
     with session_scope() as session:
         books_list = session.query(Book).filter_by(genre=title_genre)
         genre_list = session.query(Genre)
-    return render_template('genre/genre_home.html', genres=genre_list, title=title_genre, books_list=books_list)
+    return render_template('genre/genre_home.html', photo=book_photo, genres=genre_list, title=title_genre, books_list=books_list)
 
 
-@main_blueprint.route('/genre/<title_genre>', methods=["GET", "POST"])
+@main_blueprint.route('/genre/<title_genre>')
 def group_of_genre(title_genre):
-    if request.method == 'POST':
-        search = request.form['search']
-        with session_scope() as session:
-            genre_list = session.query(Genre).all()
-            filter_book = session.query(Book).filter(Book.title.ilike(f'%{search}%')).all()
-            return render_template('genre/genre_not_log.html', books_list=filter_book, title=search, genres=genre_list)
     with session_scope() as session:
         books_list = session.query(Book).filter_by(genre=title_genre)
         genre_list = session.query(Genre)
-    return render_template('genre/genre_not_log.html', genres=genre_list, title=title_genre, books_list=books_list)
+    return render_template('genre/genre_not_log.html', photo=book_photo, genres=genre_list, title=title_genre, books_list=books_list)
 
+
+@main_blueprint.route('/search', methods=["GET", "POST"])
+def search():
+    if not request.method == 'POST':
+        with session_scope() as session:
+            genre_list = session.query(Genre)
+            rand_books = get_random_books(session, count=3)
+            return render_template('genre/not_log.html', photo=book_photo, genres=genre_list, top=rand_books)
+    search = request.form['search']
+    with session_scope() as session:
+        genre_list = session.query(Genre).all()
+        filter_book = session.query(Book).filter(Book.title.ilike(f'%{search}%')).all()
+        return render_template('genre/genre_not_log.html', photo=book_photo, books_list=filter_book, title=search,
+                               genres=genre_list)

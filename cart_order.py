@@ -6,20 +6,15 @@ from sqlalchemy import cast, String
 from datetime import date
 from forms.address_form import AddressForm
 from forms.order_form import OrderForm
+from book import book_photo
 
 
 cart_order_blueprint = Blueprint('cart_order', __name__, url_prefix='/')
 
 
-@cart_order_blueprint.route('/cart', methods=["GET", "POST"])
+@cart_order_blueprint.route('/cart')
 @login_required
 def cart():
-    if request.method == 'POST':
-        search = request.form['search']
-        with session_scope() as session:
-            genre_list = session.query(Genre).all()
-            filter_book = session.query(Book).filter(Book.title.ilike(f'%{search}%')).all()
-            return render_template('genre/genre_home.html', books_list=filter_book, title=search, genres=genre_list)
     cart_list = []
     res=0
     with session_scope() as session:
@@ -122,30 +117,18 @@ def order(itog):
         return redirect(url_for('cart_order.orders_page'))
 
 
-@cart_order_blueprint.route('/orders_page', methods=["GET", "POST"])
+@cart_order_blueprint.route('/orders_page')
 @login_required
 def orders_page():
-    if request.method == 'POST':
-        search = request.form['search']
-        with session_scope() as session:
-            genre_list = session.query(Genre).all()
-            filter_book = session.query(Book).filter(Book.title.ilike(f'%{search}%')).all()
-            return render_template('genre/genre_home.html', books_list=filter_book, title=search, genres=genre_list)
     with session_scope() as session:
         genre_list = session.query(Genre).all()
         list_order = session.query(Order).filter_by(user_id=current_user.id).all()
         return render_template('cart_and_order/orders_list.html', genres=genre_list, books_list=list_order)
 
 
-@cart_order_blueprint.route('/order_page/<id_order>', methods=["GET", "POST"])
+@cart_order_blueprint.route('/order_page/<id_order>')
 @login_required
 def order_page(id_order):
-    if request.method == 'POST':
-        search = request.form['search']
-        with session_scope() as session:
-            genre_list = session.query(Genre).all()
-            filter_book = session.query(Book).filter(Book.title.ilike(f'%{search}%')).all()
-            return render_template('genre/genre_home.html', books_list=filter_book, title=search, genres=genre_list)
     order_list = []
     res = 0
     with session_scope() as session:
@@ -167,6 +150,6 @@ def order_page(id_order):
         for i in order_list:
             res += i['price']*i['count']
         genre_list = session.query(Genre).all()
-        return render_template('cart_and_order/order.html', genres=genre_list,
+        return render_template('cart_and_order/order.html', photo=book_photo, genres=genre_list,
                                books_list=order_list, id=id_order, status=status, itog=round(res, 2),
                                address=address, user=current_user.username, date=order.date)

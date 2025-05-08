@@ -1,41 +1,29 @@
 from flask import Blueprint, flash, redirect, url_for, render_template, request, Response
 from flask_login import login_required, current_user
 from db.database import session_scope
-from db.models import Book, Genre, Review, CartItem
+from db.models import Book, Genre, Review, CartItem, User
 from sqlalchemy import cast, String
 from forms.review_form import ReviewForm
 
 
-
+book_photo = "https://content.img-gorod.ru/pim/products/images/f1/0e/018fa2d6-0649-7070-ab14-c5b66029f10e.jpg?width=0&height=1200&fit=bounds"
 book_blueprint = Blueprint('book', __name__, url_prefix='/')
 
 
-@book_blueprint.route('/book_page/<id_book>', methods=["GET", "POST"])
+@book_blueprint.route('/book_page/<id_book>')
 def book_page(id_book):
-    if request.method == 'POST':
-        search = request.form['search']
-        with session_scope() as session:
-            genre_list = session.query(Genre).all()
-            filter_book = session.query(Book).filter(Book.title.ilike(f'%{search}%')).all()
-            return render_template('genre/genre_not_log.html', books_list=filter_book, title=search, genres=genre_list)
     with session_scope() as session:
         genre_list = session.query(Genre).all()
         book = session.query(Book).filter(cast(Book.id, String) == id_book).first()
         if book:
-            return render_template('book/book_page.html', book=book, genres=genre_list)
+            return render_template('book/book_page.html', book=book, genres=genre_list, photo=book_photo)
         return Response(
         status=404,
     )
 
-@book_blueprint.route('/book_page_review/<id_book>', methods=["GET", "POST"])
+@book_blueprint.route('/book_page_review/<id_book>')
 @login_required
 def book_page_review(id_book):
-    if request.method == 'POST':
-        search = request.form['search']
-        with session_scope() as session:
-            genre_list = session.query(Genre).all()
-            filter_book = session.query(Book).filter(Book.title.ilike(f'%{search}%')).all()
-            return render_template('genre/genre_home.html', books_list=filter_book, title=search, genres=genre_list)
     with session_scope() as session:
         genre_list = session.query(Genre).all()
         book = session.query(Book).filter(cast(Book.id, String) == id_book).first()
@@ -43,11 +31,20 @@ def book_page_review(id_book):
             return Response(
                 status=404,
             )
-        book_reviews_list = session.query(Review).filter_by(book_id=id_book).all()
-        if book_reviews_list:
-            return render_template("book/book_with_review.html", genres=genre_list, book=book,
+        book_reviews = session.query(Review).filter_by(book_id=id_book).all()
+        if book_reviews:
+            book_reviews_list = []
+            for item in book_reviews:
+                user = session.query(User).filter_by(id=item.user_id).first()
+                list_item = {
+                    'username': user.username,
+                    'rating': item.rating,
+                    'review_book': item.review_book,
+                }
+                book_reviews_list.append(list_item)
+            return render_template("book/book_with_review.html", photo=book_photo, genres=genre_list, book=book,
                                    list_reviews=book_reviews_list)
-        return render_template('book/book_page_review.html', book=book, genres=genre_list)
+        return render_template('book/book_page_review.html', photo=book_photo, book=book, genres=genre_list)
 
 
 @book_blueprint.route('/review/<id_book>', methods=["GET", "POST"])
@@ -69,7 +66,7 @@ def review_info(id_book):
         book = session.query(Book).filter(cast(Book.id, String) == id_book).first()
         book.rating = round(res, 2)
         session.commit()
-        return redirect(url_for('book.book_page_review', id_book=book.id))
+        return redirect(url_for('book.book_page_review', photo=book_photo, id_book=book.id))
 
 
 @book_blueprint.route('/buy/<id_book>/<path>')

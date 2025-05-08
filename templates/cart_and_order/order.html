@@ -1,4 +1,4 @@
-{% extends "genre/base_home.html" %}
+{% extends "genre/base_home_log.html" %}
 {% block title %}Card{% endblock %}
 {% block genre_list %}
 <div class="card w-25">
@@ -32,7 +32,7 @@
         <div class="d-flex flex-column">
             {% for item in books_list %}
                     <div class="d-flex border m-2 p-3 justify-content-between" onclick="location.href='/book_page_review/{{item.book_id}}';" role="button">
-                          <img src="https://content.img-gorod.ru/pim/products/images/f1/0e/018fa2d6-0649-7070-ab14-c5b66029f10e.jpg?width=0&height=1200&fit=bounds" class="card-img-top bg-light w-25 "  alt="...">
+                          <img src={{photo}} class="card-img-top bg-light w-25 "  alt="...">
                           <div class="d-flex flex-column justify-content-around">
                             <h5 class="card-title m-0">{{item.title}}</h5>
                               <p class="card-text m-0">{{item.author}}</p>

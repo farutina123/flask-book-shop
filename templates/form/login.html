@@ -1,15 +1,15 @@
 {% extends "form/base.html" %}
-{% block title %}Login{% endblock %}
+{% block title %}Авторизация{% endblock %}
 {% block content %}
-    <h2 class="text-center mb-4">Login</h2>
+    <h2 class="text-center mb-4">Авторизация</h2>
     <form method="POST">
         {{ form.hidden_tag() }}
         <div class="mb-3">{{ form.email.label(class="form-label") }}{{ form.email(class="form-control") }}</div>
         <div class="mb-3">{{ form.password.label(class="form-label") }}{{ form.password(class="form-control") }}</div>
-        <button type="submit" class="btn btn-primary w-100">Login</button>
+        <button type="submit" class="btn btn-primary w-100">Войти</button>
     </form>
     <p class="text-center mt-3">
-        Don`t have an account? <a href="{{ url_for('user.register') }}">Register</a>
+        У Вас нет аккаунта? <a href="{{ url_for('user.register') }}">Регистрация</a>
         <a href="/">На главную</a>
     </p>
 {% endblock %}
