@@ -7,7 +7,7 @@ Base = declarative_base()
 
 
 class User(Base, UserMixin):
-    __tablename__ = "users"
+    __tablename__ = 'users'
     id = Column('id', Integer, primary_key=True)
     username = Column(String(length=80), unique=True)
     email = Column(String(length=120), unique=True)
@@ -15,13 +15,13 @@ class User(Base, UserMixin):
 
 
 class Genre(Base):
-    __tablename__ = "genres"
+    __tablename__ = 'genres'
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    title = Column(String)
+    title = Column(String, unique=True)
 
 
 class Book(Base):
-    __tablename__ = "books"
+    __tablename__ = 'books'
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     title = Column(String(length=100))
     author = Column(String(length=80))
@@ -34,7 +34,7 @@ class Book(Base):
 
 
 class Review(Base):
-    __tablename__ = "reviews"
+    __tablename__ = 'reviews'
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     review_book = Column(String)
     book_id = Column(UUID(as_uuid=True), ForeignKey('books.id'))
@@ -43,7 +43,7 @@ class Review(Base):
 
 
 class CartItem(Base):
-    __tablename__ = "cartitems"
+    __tablename__ = 'cartitems'
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     book_id = Column(UUID(as_uuid=True), ForeignKey('books.id'))
     user_id = Column(Integer, ForeignKey('users.id'))
@@ -51,7 +51,7 @@ class CartItem(Base):
 
 
 class Order(Base):
-    __tablename__ = "orders"
+    __tablename__ = 'orders'
     id = Column(Integer, primary_key=True)
     date = Column(Date)
     status = Column(String, default='Новый')
@@ -61,7 +61,7 @@ class Order(Base):
 
 
 class OrderItem(Base):
-    __tablename__ = "orderitems"
+    __tablename__ = 'orderitems'
     id = Column(Integer, primary_key=True)
     book_id = Column(UUID(as_uuid=True), ForeignKey('books.id'))
     order_id = Column(Integer, ForeignKey('orders.id'))

@@ -1,8 +1,8 @@
-{% extends "book/book_page_review.html" %}
+{% extends 'book/book_page_review.html' %}
 {% block reviews %}
-<div class="d-flex flex-column">
+<div class='d-flex flex-column'>
     {% for item in list_reviews %}
-        <div class="card d-flex flex-column m-2 p-4 gap-3 bg-light">
+        <div class='card d-flex flex-column m-2 p-4 gap-3 bg-light'>
             <div>{{item.username}}</div>
             <div>Оценка: {{item.rating}}</div>
             <div>{{item.review_book}}</div>

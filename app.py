@@ -20,7 +20,7 @@ app.register_blueprint(cart_order_blueprint)
 
 
 login_manager = LoginManager(app)
-login_manager.login_view = 'login'
+login_manager.login_view = 'user.login'
 
 
 @login_manager.user_loader
@@ -32,6 +32,6 @@ def load_user(user_id):
         return user
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     init_db()
     app.run(debug=settings.DEBUG, port=settings.APP_PORT)

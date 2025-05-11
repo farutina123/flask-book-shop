@@ -1,23 +1,23 @@
-{% extends "genre/base_home_log.html" %}
+{% extends 'genre/base_home_log.html' %}
 {% block title %}{{book.title}}{% endblock %}
 {% block genre_list %}
-<div class="card w-25">
-    <div class="card-body" onmouseover="this.style.backgroundColor='#e8e9ea';"
+<div class='card w-25'>
+    <div class='card-body' onmouseover="this.style.backgroundColor='#e8e9ea';"
              onmouseout="this.style.backgroundColor='#fff';"
-             onclick="location.href='/main';" role="button">Главная</div>
+             onclick="location.href='/main';" role='button'>Главная</div>
     {% for genre in genres %}
-        <div class="card-body" onmouseover="this.style.backgroundColor='#e8e9ea';"
+        <div class='card-body' onmouseover="this.style.backgroundColor='#e8e9ea';"
              onmouseout="this.style.backgroundColor='#fff';"
-             onclick="location.href='/genre_log/{{genre.title}}';" role="button">
+             onclick="location.href='/genre_log/{{genre.title}}';" role='button'>
             {{genre.title }}
         </div>
     {% endfor %}
 </div>
 {% endblock %}
 {% block content %}
-    <div class="card w-25 text-center" role="button" onclick="location.href='/orders_page'">Заказы</div>
-    <div class="card w-25 text-center" role="button" onclick="location.href='/cart'">Корзина</div>
-    <div class="card w-25 text-center" role="button" onclick="location.href='{{ url_for('user.logout') }}';">Выход</div>
+    <div class='card w-25 text-center' role='button' onclick="location.href='/orders_page'">Заказы</div>
+    <div class='card w-25 text-center' role='button' onclick="location.href='/cart'">Корзина</div>
+    <div class='card w-25 text-center' role='button' onclick="location.href='{{ url_for('user.logout') }}';">Выход</div>
 {% endblock %}
 {% block body_genre %}
 <div class="d-flex flex-column m-4">

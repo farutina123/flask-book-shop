@@ -1,7 +1,7 @@
-{% extends "form/base.html" %}
+{% extends 'form/base.html' %}
 {% block title %}оформление заказа{% endblock %}
 {% block content %}
-    <h2 class="text-center mb-4">Информация о заказе</h2>
+    <h2 class='text-center mb-4'>Информация о заказе</h2>
     <form method="POST">
         {{ form.hidden_tag() }}
         <div>email заказчика : {{user.email}}</div>

@@ -1,48 +1,48 @@
-{% extends "genre/base_home.html" %}
+{% extends 'genre/base_home.html' %}
 {% block title %}{{book.title}}{% endblock %}
 {% block genre_list %}
-<div class="card w-25">
-    <div class="card-body" onmouseover="this.style.backgroundColor='#e8e9ea';"
+<div class='card w-25'>
+    <div class='card-body' onmouseover="this.style.backgroundColor='#e8e9ea';"
              onmouseout="this.style.backgroundColor='#fff';"
-             onclick="location.href='/';" role="button">Главная</div>
+             onclick="location.href='/';" role='button'>Главная</div>
     {% for genre in genres %}
-        <div class="card-body" onmouseover="this.style.backgroundColor='#e8e9ea';"
+        <div class='card-body' onmouseover="this.style.backgroundColor='#e8e9ea';"
              onmouseout="this.style.backgroundColor='#fff';"
-             onclick="location.href='/genre/{{genre.title}}';" role="button">
+             onclick="location.href='/genre/{{genre.title}}';" role='button'>
             {{genre.title }}
         </div>
     {% endfor %}
 </div>
 {% endblock %}
 {% block content %}
-    <div class="card w-25 text-center" role="button" onclick="location.href='/login';">Вход</div>
-    <div class="card w-25 text-center" role="button" onclick="location.href='/register';">Регистрация</div>
+    <div class='card w-25 text-center' role='button' onclick="location.href='/login';">Вход</div>
+    <div class='card w-25 text-center' role='button' onclick="location.href='/register';">Регистрация</div>
 {% endblock %}
 {% block body_genre %}
-<div class="d-flex flex-column m-4">
-    <div class="d-flex gap-4 mb-5">
-      <img src={{photo}} class="card-img-top bg-light w-25 "  alt="...">
-      <div class="d-flex flex-column justify-content-between">
-        <h3 class="card-title m-0">{{book.title}}</h3>
-          <p class="card-text">{{book.description}}</p>
+<div class='d-flex flex-column m-4'>
+    <div class='d-flex gap-4 mb-5'>
+      <img src={{photo}} class='card-img-top bg-light w-25 '  alt='...'>
+      <div class='d-flex flex-column justify-content-between'>
+        <h3 class='card-title m-0'>{{book.title}}</h3>
+          <p class='card-text'>{{book.description}}</p>
           <div>
-              <div class="d-flex justify-content-between">
+              <div class='d-flex justify-content-between'>
                   <p>Автор</p>
-                <p class="card-text m-0">{{book.author}}</p>
+                <p class='card-text m-0'>{{book.author}}</p>
               </div>
-            <div class="d-flex justify-content-between">
+            <div class='d-flex justify-content-between'>
                 <p>Год издания</p>
-                <p class="card-text m-0">{{book.year}}</p>
+                <p class='card-text m-0'>{{book.year}}</p>
             </div>
-            <div class="d-flex justify-content-between">
+            <div class='d-flex justify-content-between'>
                 <p>Рейтинг</p>
-                <p class="card-text m-0">Рейтинг: {{book.rating}} </p>
+                <p class='card-text m-0'>Рейтинг: {{book.rating}} </p>
             </div>
           </div>
       </div>
-      <div class="d-flex flex-column justify-content-around card-body border gap-4 h-50">
-          <h4 class="card-text font-weight-bold">{{book.price}} P</h4>
-           <a href="/login" class="btn btn-primary">Купить</a>
+      <div class='d-flex flex-column justify-content-around card-body border gap-4 h-50'>
+          <h4 class='card-text font-weight-bold'>{{book.price}} P</h4>
+           <a href='/login' class='btn btn-primary'>Купить</a>
       </div>
     </div>
 </div>

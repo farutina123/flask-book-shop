@@ -22,7 +22,12 @@
                 {% block content %}{% endblock %}
             </div>
             <div class="card text-center">{% block top %}{% endblock %}</div>
-            <div class="card">{% block body_genre %}{% endblock %}</div>
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                            {% if messages %}
+                                {% for category, message in messages %}<div class=" mt-1 alert alert-{{ category }}">{{message}}</div>{% endfor %}
+                            {% endif %}
+                    {% endwith %}
+            <div class="card">{% block body_genre %} {% endblock %}</div>
             <div class="d-flex justify-content-between text-center gap-2">
                 <div class="card w-100 text-center mb-4">
                     <div class="card-title">Контакты:</div>

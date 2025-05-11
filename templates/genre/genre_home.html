@@ -21,13 +21,7 @@
 {% endblock %}
 {% block body_genre %}
 <div>
-    <div>
-        {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
-                    {% for category, message in messages %}<div class=" mt-1 alert alert-{{ category }}">{{message}}</div>{% endfor %}
-                {% endif %}
-        {% endwith %}
-    </div>
+
     <h2 class="m-4">Книги категории {{title}}</h2>
     <div class="d-flex flex-wrap">
         {% for item in books_list %}
