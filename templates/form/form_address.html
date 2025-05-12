@@ -2,7 +2,7 @@
 {% block title %}Адрес{% endblock %}
 {% block content %}
     <h2 class='text-center mb-4'>Введите адрес</h2>
-    <form action='/order/{{itog}}' method='POST'>
+    <form action='/order' method='POST'>
         {{ form.hidden_tag() }}
         <div class='mb-3'>{{ form.address.label(class='form-label') }}{{ form.address(class='form-control') }}</div>
         <button type='submit' class='btn btn-primary w-100'>Подтвердить и оформить</button>
