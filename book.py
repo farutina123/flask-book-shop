@@ -14,11 +14,24 @@ def book_page(book_id):
     with session_scope() as session:
         genre_list = session.query(Genre).all()
         book = session.query(Book).filter(cast(Book.id, String) == book_id).first()
-        if book:
+        if not book:
+            return Response(
+                status=404,
+            )
+        book_reviews = session.query(Review).filter_by(book_id=book_id).all()
+        if not book_reviews:
             return render_template('book/book_page.html', book=book, genres=genre_list, photo=book_photo)
-        return Response(
-            status=404,
-        )
+        book_reviews_list = []
+        for item in book_reviews:
+            user = session.query(User).filter_by(id=item.user_id).first()
+            list_item = {
+                'username': user.username,
+                'rating': item.rating,
+                'review_book': item.review_book,
+            }
+            book_reviews_list.append(list_item)
+        return render_template('book/book_with_review_not_log.html', photo=book_photo, genres=genre_list, book=book,
+                               list_reviews=book_reviews_list)
 
 
 @book_blueprint.route('/book_page_review/<book_id>')
