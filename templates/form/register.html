@@ -5,15 +5,15 @@
     <form method='POST'>
         {{ form.hidden_tag() }}
         <div class='mb-3'>{{ form.username.label(class='form-label') }}{{ form.username(class='form-control') }}</div>
-        <div class="mb-3">{{ form.email.label(class="form-label") }}{{ form.email(class="form-control") }}</div>
-        <div class="mb-3">{{ form.password.label(class="form-label") }}{{ form.password(class="form-control") }}</div>
-        <div class="mb-3">
-            {{ form.confirm_password.label(class="form-label") }}{{ form.confirm_password(class="form-control") }}
+        <div class='mb-3'>{{ form.email.label(class='form-label') }}{{ form.email(class='form-control') }}</div>
+        <div class='mb-3'>{{ form.password.label(class='form-label') }}{{ form.password(class='form-control') }}</div>
+        <div class='mb-3'>
+            {{ form.confirm_password.label(class='form-label') }}{{ form.confirm_password(class='form-control') }}
         </div>
-        <button type="submit" class="btn btn-primary w-100">Подтвердить</button>
+        <button type='submit' class='btn btn-primary w-100'>Подтвердить</button>
     </form>
-    <p class="text-center">
+    <p class='text-center'>
         Уже есть аккаунт? <a href="{{ url_for('user.login') }}">Войти</a>
-        <a href="/">На главную</a>
+        <a href='/'>На главную</a>
     </p>
 {% endblock %}

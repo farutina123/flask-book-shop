@@ -36,35 +36,41 @@ def cart():
         return render_template('cart_and_order/cart.html', genres=genre_list, books_list=cart_list, itog=round(res, 2))
 
 
-@cart_order_blueprint.route('/edit_cart/<action>/<book_id>')
+@cart_order_blueprint.route('/edit_cart_plus/<book_id>')
 @login_required
-def edit_cart(action, book_id):
-    match action:
-        case '+':
-            with session_scope() as session:
-                cart_item = session.query(CartItem).filter(cast(CartItem.book_id, String) == book_id,
-                                                           CartItem.user_id == current_user.id).first()
-                cart_item.count += 1
-                session.commit()
-                return redirect(url_for('cart_order.cart'))
-        case '-':
-            with session_scope() as session:
-                cart_item = session.query(CartItem).filter(cast(CartItem.book_id, String) == book_id,
-                                                           CartItem.user_id == current_user.id).first()
-                if cart_item.count == 1:
-                    session.delete(cart_item)
-                    session.commit()
-                    return redirect(url_for('cart_order.cart'))
-                cart_item.count -= 1
-                session.commit()
-                return redirect(url_for('cart_order.cart'))
-        case 'del':
-            with session_scope() as session:
-                cart_item = session.query(CartItem).filter(cast(CartItem.book_id, String) == book_id,
-                                                           CartItem.user_id == current_user.id).first()
-                session.delete(cart_item)
-                session.commit()
-                return redirect(url_for('cart_order.cart'))
+def edit_cart_plus(book_id):
+    with session_scope() as session:
+        cart_item = session.query(CartItem).filter(cast(CartItem.book_id, String) == book_id,
+                                                   CartItem.user_id == current_user.id).first()
+        cart_item.count += 1
+        session.commit()
+        return redirect(url_for('cart_order.cart'))
+
+
+@cart_order_blueprint.route('/edit_cart_minus/<book_id>')
+@login_required
+def edit_cart_minus(book_id):
+    with session_scope() as session:
+        cart_item = session.query(CartItem).filter(cast(CartItem.book_id, String) == book_id,
+                                                   CartItem.user_id == current_user.id).first()
+        if cart_item.count == 1:
+            session.delete(cart_item)
+            session.commit()
+            return redirect(url_for('cart_order.cart'))
+        cart_item.count -= 1
+        session.commit()
+        return redirect(url_for('cart_order.cart'))
+
+
+@cart_order_blueprint.route('/edit_cart_del/<book_id>')
+@login_required
+def edit_cart_del(book_id):
+    with session_scope() as session:
+        cart_item = session.query(CartItem).filter(cast(CartItem.book_id, String) == book_id,
+                                                   CartItem.user_id == current_user.id).first()
+        session.delete(cart_item)
+        session.commit()
+        return redirect(url_for('cart_order.cart'))
 
 
 @cart_order_blueprint.route('/type_address/<itog>', methods=["GET", "POST"])

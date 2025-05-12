@@ -2,16 +2,16 @@
 {% block title %}оформление заказа{% endblock %}
 {% block content %}
     <h2 class='text-center mb-4'>Информация о заказе</h2>
-    <form method="POST">
+    <form method='POST'>
         {{ form.hidden_tag() }}
         <div>email заказчика : {{user.email}}</div>
         <div>имя заказчика : {{user.username}}</div>
         <div>сумма заказа : {{summa}}</div>
         <div>Оплата товара при получении</div>
-        <div class="mb-3">{{ form.type_address.label(class="form-label") }}{{ form.type_address(class="form-control") }}</div>
-        <button type="submit" class="btn btn-primary w-100">Подтвердить</button>
+        <div class='mb-3'>{{ form.type_address.label(class='form-label') }}{{ form.type_address(class='form-control') }}</div>
+        <button type='submit' class='btn btn-primary w-100'>Подтвердить</button>
     </form>
-    <p class="text-center">
-        <a href="/main">На главную</a>
+    <p class='text-center'>
+        <a href='/main'>На главную</a>
     </p>
 {% endblock %}

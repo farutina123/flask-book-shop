@@ -84,9 +84,9 @@ def buy(book_id, path):
             session.commit()
     if path == 'book_page_review':
         flash('книга добавлена в корзину', 'info')
-        return redirect(url_for('book.book_page_review', id_book=book_id))
+        return redirect(url_for('book.book_page_review', book_id=book_id))
     flash('книга добавлена в корзину', 'info')
-    return redirect(url_for('main.main_route', id_book=book_id))
+    return redirect(url_for('main.main_route', book_id=book_id))
 
 
 @book_blueprint.route('/buy_genre/<book_id>/<title>')

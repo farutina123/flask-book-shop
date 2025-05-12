@@ -1,48 +1,48 @@
-{% extends "genre/base_home_log.html" %}
+{% extends 'genre/base_home_log.html' %}
 {% block title %}Card{% endblock %}
 {% block genre_list %}
-<div class="card w-25">
-    <div class="card-body" onmouseover="this.style.backgroundColor='#e8e9ea';"
+<div class='card w-25'>
+    <div class='card-body' onmouseover="this.style.backgroundColor='#e8e9ea';"
              onmouseout="this.style.backgroundColor='#fff';"
-             onclick="location.href='/main';" role="button">Главная</div>
+             onclick="location.href='/main';" role='button'>Главная</div>
     {% for genre in genres %}
-        <div class="card-body" onmouseover="this.style.backgroundColor='#e8e9ea';"
+        <div class='card-body' onmouseover="this.style.backgroundColor='#e8e9ea';"
              onmouseout="this.style.backgroundColor='#fff';"
-             onclick="location.href='/genre_log/{{genre.title}}';" role="button">
+             onclick="location.href='/genre_log/{{genre.title}}';" role='button'>
             {{genre.title }}
         </div>
     {% endfor %}
 </div>
 {% endblock %}
 {% block content %}
-    <div class="card w-25 text-center" role="button" onclick="location.href='/orders_page'">Заказы</div>
-    <div class="card w-25 text-center" role="button" onclick="location.href='/cart'">Корзина</div>
-    <div class="card w-25 text-center" role="button" onclick="location.href='{{ url_for('user.logout') }}';">Выход</div>
+    <div class='card w-25 text-center' role='button' onclick="location.href='/orders_page'">Заказы</div>
+    <div class='card w-25 text-center' role='button' onclick="location.href='/cart'">Корзина</div>
+    <div class='card w-25 text-center' role='button' onclick="location.href='{{ url_for('user.logout') }}';">Выход</div>
 {% endblock %}
 {% block body_genre %}
-<div class="m-5">
-    <h2 class="text-center">Заказ № {{id}} ({{status}})</h2>
-    <div class="d-flex flex-column gap-4 ">
+<div class='m-5'>
+    <h2 class='text-center'>Заказ № {{id}} ({{status}})</h2>
+    <div class='d-flex flex-column gap-4 '>
         <h4>дата создания заказа {{date}}</h4>
         <h4>Адрес доставки: {{address}}</h4>
         <h4>Имя заказчика: {{user}}</h4>
         <h4>оплата при получении</h4>
     </div>
-    <div class="d-flex flex-column gap-4 w-75 mb-5 m-auto">
-        <div class="d-flex flex-column">
+    <div class='d-flex flex-column gap-4 w-75 mb-5 m-auto'>
+        <div class='d-flex flex-column'>
             {% for item in books_list %}
-                    <div class="d-flex border m-2 p-3 justify-content-between" onclick="location.href='/book_page_review/{{item.book_id}}';" role="button">
-                          <img src={{photo}} class="card-img-top bg-light w-25 "  alt="...">
-                          <div class="d-flex flex-column justify-content-around">
-                            <h5 class="card-title m-0">{{item.title}}</h5>
-                              <p class="card-text m-0">{{item.author}}</p>
-                              <h6 class="card-text font-weight-bold m-0">{{item.price}} P * {{item.count}} шт.</h6>
+                    <div class='d-flex border m-2 p-3 justify-content-between' onclick="location.href='/book_page_review/{{item.book_id}}';" role='button'>
+                          <img src={{photo}} class='card-img-top bg-light w-25 '  alt='...'>
+                          <div class='d-flex flex-column justify-content-around'>
+                            <h5 class='card-title m-0'>{{item.title}}</h5>
+                              <p class='card-text m-0'>{{item.author}}</p>
+                              <h6 class='card-text font-weight-bold m-0'>{{item.price}} P * {{item.count}} шт.</h6>
                               <div>{{item.price_count}}</div>
                           </div>
                     </div>
             {% endfor %}
         </div>
-        <div class="d-flex flex-column border align-items-center p-3 gap-4 ">
+        <div class='d-flex flex-column border align-items-center p-3 gap-4 '>
             <div>
                 Итого: {{itog}} Р
             </div>
