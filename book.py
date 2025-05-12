@@ -45,19 +45,19 @@ def book_page_review(book_id):
                 status=404,
             )
         book_reviews = session.query(Review).filter_by(book_id=book_id).all()
-        if book_reviews:
-            book_reviews_list = []
-            for item in book_reviews:
-                user = session.query(User).filter_by(id=item.user_id).first()
-                list_item = {
-                    'username': user.username,
-                    'rating': item.rating,
-                    'review_book': item.review_book,
-                }
-                book_reviews_list.append(list_item)
-            return render_template('book/book_with_review.html', photo=book_photo, genres=genre_list, book=book,
-                                   list_reviews=book_reviews_list)
-        return render_template('book/book_page_review.html', photo=book_photo, book=book, genres=genre_list)
+        if not book_reviews:
+            return render_template('book/book_page_review.html', photo=book_photo, book=book, genres=genre_list)
+        book_reviews_list = []
+        for item in book_reviews:
+            user = session.query(User).filter_by(id=item.user_id).first()
+            list_item = {
+                'username': user.username,
+                'rating': item.rating,
+                'review_book': item.review_book,
+            }
+            book_reviews_list.append(list_item)
+        return render_template('book/book_with_review.html', photo=book_photo, genres=genre_list, book=book,
+                               list_reviews=book_reviews_list)
 
 
 @book_blueprint.route('/review/<book_id>', methods=['GET', 'POST'])
