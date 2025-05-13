@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, Response
+from flask import Blueprint, render_template, request, Response, redirect, url_for
 from flask_login import login_required
 from db.database import session_scope
 from db.models import Book, Genre
@@ -41,20 +41,26 @@ def not_log():
         return render_template('genre/not_log.html', photo=book_photo, genres=genre_list, top=rand_books)
 
 
-@main_blueprint.route('/main', methods=['GET', 'POST'])
+@main_blueprint.route('/main_get')
 @login_required
-def main_route():
-    if request.method == 'POST':
-        search = request.form['search']
-        with session_scope() as session:
-            genre_list = session.query(Genre).all()
-            filter_book = session.query(Book).filter(Book.title.ilike(f'%{search}%')).all()
-            return render_template('genre/genre_home.html', photo=book_photo, books_list=filter_book, title=search,
-                                   genres=genre_list)
+def main_route_get():
     with session_scope() as session:
         genre_list = session.query(Genre).all()
         rand_books = get_random_books(session, count=3)
         return render_template('genre/home.html', photo=book_photo, genres=genre_list, top=rand_books)
+
+
+@main_blueprint.route('/main', methods=['GET', 'POST'])
+@login_required
+def main_route():
+    if not request.method == 'POST':
+        return redirect(url_for('main.main_route_get'))
+    search = request.form['search']
+    with session_scope() as session:
+        genre_list = session.query(Genre).all()
+        filter_book = session.query(Book).filter(Book.title.ilike(f'%{search}%')).all()
+        return render_template('genre/genre_home.html', photo=book_photo, books_list=filter_book, title=search,
+                               genres=genre_list)
 
 
 @main_blueprint.route('/genre_log/<title_genre>')
@@ -87,10 +93,7 @@ def group_of_genre(title_genre):
 @main_blueprint.route('/search', methods=['GET', 'POST'])
 def search():
     if not request.method == 'POST':
-        with session_scope() as session:
-            genre_list = session.query(Genre)
-            rand_books = get_random_books(session, count=3)
-            return render_template('genre/not_log.html', photo=book_photo, genres=genre_list, top=rand_books)
+            return redirect(url_for('main.not_log'))
     search = request.form['search']
     with session_scope() as session:
         genre_list = session.query(Genre).all()

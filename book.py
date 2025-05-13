@@ -9,15 +9,17 @@ book_photo = 'https://content.img-gorod.ru/pim/products/images/f1/0e/018fa2d6-06
 book_blueprint = Blueprint('book', __name__, url_prefix='/')
 
 
+
+
 @book_blueprint.route('/book_page/<book_id>')
 def book_page(book_id):
     with session_scope() as session:
-        genre_list = session.query(Genre).all()
         book = session.query(Book).filter(cast(Book.id, String) == book_id).first()
         if not book:
             return Response(
                 status=404,
             )
+        genre_list = session.query(Genre).all()
         book_reviews = session.query(Review).filter_by(book_id=book_id).all()
         if not book_reviews:
             return render_template('book/book_page.html', book=book, genres=genre_list, photo=book_photo)
@@ -38,12 +40,12 @@ def book_page(book_id):
 @login_required
 def book_page_review(book_id):
     with session_scope() as session:
-        genre_list = session.query(Genre).all()
         book = session.query(Book).filter(cast(Book.id, String) == book_id).first()
         if not book:
             return Response(
                 status=404,
             )
+        genre_list = session.query(Genre).all()
         book_reviews = session.query(Review).filter_by(book_id=book_id).all()
         if not book_reviews:
             return render_template('book/book_page_review.html', photo=book_photo, book=book, genres=genre_list)
@@ -60,16 +62,41 @@ def book_page_review(book_id):
                                list_reviews=book_reviews_list)
 
 
+@book_blueprint.route('/review_get/<book_id>')
+@login_required
+def review_info_get(book_id):
+    form = ReviewForm()
+    with session_scope() as session:
+        book = session.query(Book).filter(cast(Book.id, String) == book_id).first()
+        if not book:
+            return Response(
+                status=404,
+            )
+    return render_template('form/review.html', form=form, book=book_id)
+
+
 @book_blueprint.route('/review/<book_id>', methods=['GET', 'POST'])
 @login_required
 def review_info(book_id):
     form = ReviewForm()
-    if not request.method == 'POST':
-        return render_template('form/review.html', form=form, book=book_id)
-    review = Review(review_book=form.review.data, book_id=book_id, user_id=current_user.id,
-                    rating=float(form.rating.data))
     with session_scope() as session:
-        session.add(review)
+        book = session.query(Book).filter(cast(Book.id, String) == book_id).first()
+        if not book:
+            return Response(
+                status=404,
+            )
+    if not request.method == 'POST':
+        return redirect(url_for('book.review_info_get', form=form, book_id=book_id))
+    with session_scope() as session:
+        review_user_book = session.query(Review).filter(Review.user_id == current_user.id,
+                                                        Review.book_id == book_id).first()
+        if review_user_book:
+            review_user_book.review_book = form.review.data
+            review_user_book.rating = float(form.rating.data)
+        else:
+            review = Review(review_book=form.review.data, book_id=book_id, user_id=current_user.id,
+                        rating=float(form.rating.data))
+            session.add(review)
     with session_scope() as session:
         book_reviews_list = session.query(Review).filter_by(book_id=book_id).all()
         res_sum = 0
@@ -87,6 +114,11 @@ def review_info(book_id):
 @login_required
 def buy(book_id, path):
     with session_scope() as session:
+        book = session.query(Book).filter(cast(Book.id, String) == book_id).first()
+        if not book:
+            return Response(
+                status=404,
+            )
         test_book = session.query(CartItem).filter(cast(CartItem.book_id, String) == book_id,
                                                    CartItem.user_id == current_user.id).first()
         if test_book:
@@ -106,6 +138,11 @@ def buy(book_id, path):
 @login_required
 def buy_genre(book_id, title):
     with session_scope() as session:
+        book = session.query(Book).filter(cast(Book.id, String) == book_id).first()
+        if not book:
+            return Response(
+                status=404,
+            )
         test_book = session.query(CartItem).filter(cast(CartItem.book_id, String) == book_id,
                                                    CartItem.user_id == current_user.id).first()
         if test_book:

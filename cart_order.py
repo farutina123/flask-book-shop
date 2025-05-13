@@ -29,32 +29,17 @@ def itog_summa():
             cart_list.append(list_item)
         for i in cart_list:
             res += i['price'] * i['count']
-    return round(res, 2)
+    return round(res, 2), cart_list
 
 
 @cart_order_blueprint.route('/cart')
 @login_required
 def cart():
-    cart_list = []
-    res = 0
+    res, cart_list = itog_summa()
     with session_scope() as session:
-        cart_list_db = session.query(CartItem).filter_by(user_id=current_user.id).all()
-        for item in cart_list_db:
-            book = session.query(Book).filter_by(id=item.book_id).first()
-            list_item = {
-                'title': book.title,
-                'author': book.author,
-                'price': book.price,
-                'count': item.count,
-                'book_id': item.book_id,
-                'price_count': round(book.price * item.count, 2)
-            }
-            cart_list.append(list_item)
-        for i in cart_list:
-            res += i['price'] * i['count']
         genre_list = session.query(Genre).all()
         session.commit()
-        return render_template('cart_and_order/cart.html', genres=genre_list, books_list=cart_list, itog=round(res, 2))
+        return render_template('cart_and_order/cart.html', genres=genre_list, books_list=cart_list, itog=res)
 
 
 @cart_order_blueprint.route('/edit_cart_plus/<book_id>')
@@ -94,19 +79,27 @@ def edit_cart_del(book_id):
         return redirect(url_for('cart_order.cart'))
 
 
+@cart_order_blueprint.route('/type_address_get')
+@login_required
+def type_address_get():
+    form = OrderForm()
+    res = itog_summa()[0]
+    with session_scope() as session:
+        list_cart = session.query(CartItem).first()
+    if list_cart:
+        return render_template('form/form_order.html', summa=res, user=current_user, form=form)
+    flash("корзина пуста", 'danger')
+    return redirect(url_for('cart_order.cart'))
+
+
 @cart_order_blueprint.route('/type_address', methods=["GET", "POST"])
 @login_required
 def type_address():
     form = OrderForm()
     form_address = AddressForm()
-    res = itog_summa()
+    res = itog_summa()[0]
     if not request.method == "POST":
-        with session_scope() as session:
-            list_cart = session.query(CartItem).first()
-        if list_cart:
-            return render_template('form/form_order.html', summa=res, user=current_user, form=form)
-        flash("корзина пуста", 'danger')
-        return redirect(url_for('cart_order.cart'))
+        return redirect(url_for('cart_order.type_address_get'))
     if form.type_address.data == 'door':
         return render_template('form/form_address.html', form=form_address)
     date_today = date.today()
@@ -129,7 +122,7 @@ def type_address():
 @login_required
 def order():
     form = AddressForm()
-    res = itog_summa()
+    res = itog_summa()[0]
     if not form.validate_on_submit():
         if form.errors:
             flash(form.errors, category='danger')

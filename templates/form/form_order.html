@@ -2,7 +2,7 @@
 {% block title %}оформление заказа{% endblock %}
 {% block content %}
     <h2 class='text-center mb-4'>Информация о заказе</h2>
-    <form method='POST'>
+    <form action="/type_address" method='POST'>
         {{ form.hidden_tag() }}
         <div>email заказчика : {{user.email}}</div>
         <div>имя заказчика : {{user.username}}</div>

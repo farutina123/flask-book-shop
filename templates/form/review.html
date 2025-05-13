@@ -3,7 +3,7 @@
 
 {% block content %}
     <h2 class='text-center mb-4'>Отзыв</h2>
-    <form method='POST'>
+    <form action='/review/{{book}}' method='POST'>
         {{ form.hidden_tag() }}
         <p>оцените книгу</p>
         <div class='mb-3'>
