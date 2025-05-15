@@ -16,8 +16,10 @@ def itog_summa():
     res = 0
     with session_scope() as session:
         cart_list_db = session.query(CartItem).filter_by(user_id=current_user.id).all()
+        book_ids = [str(item.book_id) for item in cart_list_db]
+        books = {str(book.id): book for book in session.query(Book).filter(Book.id.in_(book_ids)).all()}
         for item in cart_list_db:
-            book = session.query(Book).filter_by(id=item.book_id).first()
+            book = books[f'{item.book_id}']
             list_item = {
                 'title': book.title,
                 'author': book.author,
