@@ -1,4 +1,4 @@
-from flask import Blueprint, flash, redirect, url_for, render_template, request
+from flask import Blueprint, flash, redirect, url_for, render_template, request, Response
 from flask_login import login_required, current_user
 from db.database import session_scope
 from db.models import Book, Genre, CartItem, OrderItem, Order
@@ -29,7 +29,8 @@ def itog_summa():
             cart_list.append(list_item)
         for i in cart_list:
             res += i['price'] * i['count']
-    return round(res, 2), cart_list
+        summa = round(res, 2)
+    return summa, cart_list
 
 
 @cart_order_blueprint.route('/cart')
@@ -113,7 +114,7 @@ def type_address():
             book = session.query(Book).filter_by(id=item.book_id).first()
             orderitem_new = OrderItem(book_id=item.book_id, order_id=id_order, count=item.count, price=book.price)
             session.add(orderitem_new)
-            session.commit()
+        session.commit()
         session.query(CartItem).delete()
         return redirect(url_for('cart_order.orders_page'))
 
@@ -138,7 +139,7 @@ def order():
             book = session.query(Book).filter_by(id=item.book_id).first()
             orderitem_new = OrderItem(book_id=item.book_id, order_id=id_order, count=item.count, price=book.price)
             session.add(orderitem_new)
-            session.commit()
+        session.commit()
         session.query(CartItem).delete()
         return redirect(url_for('cart_order.orders_page'))
 
@@ -158,19 +159,25 @@ def order_page(id_order):
     order_list = []
     res = 0
     with session_scope() as session:
+        order = session.query(Order).filter(Order.id == id_order, Order.user_id == current_user.id).first()
+        if not order:
+            return Response(
+                status=404,
+            )
         orderitem_list = session.query(OrderItem).filter_by(order_id=id_order).all()
-        order = session.query(Order).filter(Order.id == id_order).first()
         status = order.status
         address = order.address
+        book_ids = [str(item.book_id) for item in orderitem_list]
+        books = {str(book.id): book for book in session.query(Book).filter(Book.id.in_(book_ids)).all()}
         for item in orderitem_list:
-            book = session.query(Book).filter_by(id=item.book_id).first()
+            book = books[f'{item.book_id}']
             list_item = {
                 'title': book.title,
                 'author': book.author,
                 'price': book.price,
                 'count': item.count,
                 'price_count': round(book.price * item.count, 2),
-                'book_id': book.id
+                'book_id': item.book_id
             }
             order_list.append(list_item)
         for i in order_list:
