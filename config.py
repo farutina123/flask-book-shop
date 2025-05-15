@@ -4,7 +4,7 @@ class Settings(BaseSettings):
     DATABASE_URL: str
     SECRET_KEY: str
     APP_PORT: int
-    DEBUG: bool = True
+    DEBUG: bool = False
 
     class Config:
         env_file = '.env'
