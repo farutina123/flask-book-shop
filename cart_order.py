@@ -19,7 +19,7 @@ def itog_summa():
         book_ids = [str(item.book_id) for item in cart_list_db]
         books = {str(book.id): book for book in session.query(Book).filter(Book.id.in_(book_ids)).all()}
         for item in cart_list_db:
-            book = books[f'{item.book_id}']
+            book = books[str(item.book_id)]
             list_item = {
                 'title': book.title,
                 'author': book.author,
@@ -172,7 +172,7 @@ def order_page(id_order):
         book_ids = [str(item.book_id) for item in orderitem_list]
         books = {str(book.id): book for book in session.query(Book).filter(Book.id.in_(book_ids)).all()}
         for item in orderitem_list:
-            book = books[f'{item.book_id}']
+            book = books[str(item.book_id)]
             list_item = {
                 'title': book.title,
                 'author': book.author,
